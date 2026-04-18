@@ -10,4 +10,10 @@ define('DB_PORT', 3306);
 define('APP_NAME', 'Lore');
 define('SESSION_LIFETIME', 60 * 60 * 24 * 7); // 7 days
 
+// Brute-force protection
+define('LOGIN_MAX_ATTEMPTS',     5);    // max failed attempts before lockout
+define('LOGIN_WINDOW_SECONDS',   900);  // 15 min — sliding window for counting attempts
+define('LOGIN_LOCKOUT_SECONDS',  900);  // 15 min — lockout duration after exceeding limit
+define('LOGIN_DELAY_BASE',       1);    // seconds — base delay, doubles each attempt above threshold
+
 
