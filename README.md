@@ -48,9 +48,31 @@ define('LOGIN_LOCKOUT_SECONDS', 900);  // lockout duration (15 min)
 define('LOGIN_DELAY_BASE',      1);    // progressive delay base in seconds
 ```
 
-### 3. Upload files
+### 3. Set the base path
 
-Upload all files to your web hosting. The project root should be your document root (e.g. `public_html/`).
+If you install Lore in a subdirectory (e.g. `yourdomain.com/app/`), update two places:
+
+**`config.php`:**
+```php
+// Root install — yourdomain.com/
+define('APP_BASE', '');
+
+// Subdirectory install — yourdomain.com/app/
+define('APP_BASE', '/app');
+```
+
+**`.htaccess`:**
+```apache
+# Root install
+RewriteBase /
+
+# Subdirectory install
+RewriteBase /app/
+```
+
+### 4. Upload files
+
+Upload all files to your web hosting. The project root should be your document root (e.g. `public_html/`), or a subdirectory of it if you set `APP_BASE` above.
 
 ### 4. Open in browser
 
