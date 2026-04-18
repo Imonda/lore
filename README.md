@@ -1,6 +1,6 @@
 # Lore
 
-Self-hosted archive for your AI conversations. Import exports from Claude and ChatGPT, search them instantly, and keep everything private on your own server.
+Self-hosted archive for your AI conversations. Import exports from Claude, ChatGPT, and Gemini, search them instantly, and keep everything private on your own server.
 
 All data is encrypted in the browser before it reaches the server. Your encryption key never leaves your device.
 
@@ -56,7 +56,7 @@ Lore uses client-side encryption inspired by Bitwarden.
 | What the server stores | What the server never sees |
 |---|---|
 | Encrypted conversations (AES-GCM blobs) | Your master encryption key |
-| Argon2ID password hash | Your plaintext conversations |
+| PBKDF2 password hash | Your plaintext conversations |
 | PBKDF2 salt | Your password |
 | Encrypted master key (wrapped) | Your recovery phrase |
 
@@ -68,6 +68,9 @@ Lore uses client-side encryption inspired by Bitwarden.
 
 **Emergency Kit:**
 Generated at registration. Contains a recovery phrase that can decrypt your master key independently of your password. Store it somewhere safe — if you lose both your password and the kit, your data cannot be recovered by anyone.
+
+**Account recovery:**
+If you forget your password, go to `/recover` and upload your Emergency Kit file. Your master key will be re-wrapped with a new password. Your data is preserved.
 
 ---
 
@@ -83,7 +86,45 @@ Generated at registration. Contains a recovery phrase that can decrypt your mast
 2. Wait for the email with your ZIP file
 3. In Lore, click **Import** and drop the ZIP
 
+**Gemini:**
+1. Go to myaccount.google.com → Data & privacy → Download your data (Google Takeout)
+2. Select only **Gemini Apps** and export
+3. Wait for the email with your ZIP file
+4. In Lore, click **Import** and drop the ZIP
+
+**Lore backup:**
+1. Export your archive from Settings → Export
+2. In Lore (same or different instance), click **Import** and drop the ZIP
+3. If the export was encrypted, you will be prompted for the export password
+
 The ZIP is processed entirely in your browser. It is never uploaded to the server.
+
+---
+
+## Exporting conversations
+
+Go to **Settings → Export** to download all your conversations as a ZIP file.
+
+Two modes are available:
+
+- **Plaintext** — human-readable JSON, no password required. Use for backups you want to read directly or migrate elsewhere.
+- **Encrypted** — AES-256-GCM, protected by a password you choose. The server never sees the password or the plaintext. Use for long-term backups or moving data between Lore instances.
+
+---
+
+## Search
+
+Search runs entirely in your browser — nothing is sent to the server.
+
+When you log in, your conversations are decrypted and cached locally in IndexedDB. Search queries run against this local cache and return results instantly. When you log out, the cache is wiped and the encryption key is removed from memory.
+
+---
+
+## Interface
+
+Lore supports **dark mode** (default) and **light mode**. The toggle is in the Settings panel (⚙ icon in the header).
+
+On mobile, the sidebar and conversation view switch to full-screen panels with slide animation.
 
 ---
 
