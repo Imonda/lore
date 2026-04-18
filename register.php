@@ -43,6 +43,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="stylesheet" href="<?= APP_BASE ?>/css/light.css">
     <link rel="stylesheet" href="<?= APP_BASE ?>/css/style.css">
     <link rel="stylesheet" href="<?= APP_BASE ?>/css/auth.css">
+    <link rel="icon" type="image/x-icon" href="<?= APP_BASE ?>/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?= APP_BASE ?>/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?= APP_BASE ?>/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="<?= APP_BASE ?>/apple-touch-icon.png">       
 </head>
 <body class="auth-page">
 
