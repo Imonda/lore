@@ -1,0 +1,23 @@
+/* Light mode — warm greys, no pure white */
+[data-theme="light"] {
+  --bg: #eaeaea;
+  --bg2: #e0e0e0;
+  --bg3: #d4d4d4;
+  --border: #c8c8c8;
+  --border2: #b8b8b8;
+  --text: #1a1a1a;
+  --text2: #555;
+  --text3: #888;
+  --accent: #a07840;
+  --accent2: #4a8c4a;
+  --claude: #a05a28;
+  --chatgpt: #0f8f58;
+  --gemini: #2563c4;  
+  --danger: #a03030;
+  --overlay: rgba(0, 0, 0, 0.4);
+  --highlight: rgba(160, 120, 64, 0.2);
+  --drop-hover: rgba(160, 120, 64, 0.06);
+  --import-claude: rgba(160, 90, 40, 0.12);
+  --import-chatgpt: rgba(15, 143, 88, 0.12);
+  --import-gemini: rgba(37, 99, 196, 0.1);  
+}

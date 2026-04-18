@@ -1,0 +1,50 @@
+# Lore — Apache configuration
+
+# Deny direct access to PHP includes and config
+<FilesMatch "^(config\.php)$">
+    Require all denied
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # ── Clean URLs ────────────────────────────────────────────────────────────────
+    RewriteRule ^$ index.php [L]
+    RewriteRule ^login/?$ login.php [L]
+    RewriteRule ^register/?$ register.php [L]
+    RewriteRule ^recover/?$ recover.php [L]
+    RewriteRule ^logout/?$ logout.php [L]
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set Referrer-Policy "same-origin"
+</IfModule>
+
+# Prevent directory listing
+Options -Indexes
+
+# ── Cache control ─────────────────────────────────────────────────────────────
+
+# Static assets — cache for 1 year
+<FilesMatch "\.(css|js|woff2?|ttf|eot|ico|svg|png|jpg|jpeg|gif|webp)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+</FilesMatch>
+
+# PHP responses — never cache
+<FilesMatch "\.php$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate"
+    Header set Pragma "no-cache"
+</FilesMatch>
+
+# ── PHP OPcache ───────────────────────────────────────────────────────────────
+<IfModule mod_php.c>
+    php_value opcache.enable 1
+    php_value opcache.memory_consumption 64
+    php_value opcache.interned_strings_buffer 8
+    php_value opcache.max_accelerated_files 1000
+    php_value opcache.revalidate_freq 60
+</IfModule>

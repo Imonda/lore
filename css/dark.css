@@ -1,0 +1,23 @@
+/* Dark mode — default theme */
+:root {
+  --bg: #0e0e0e;
+  --bg2: #161616;
+  --bg3: #1e1e1e;
+  --border: #2a2a2a;
+  --border2: #333;
+  --text: #d4d0c8;
+  --text2: #888;
+  --text3: #555;
+  --accent: #c8a96e;
+  --accent2: #8fbc8f;
+  --claude: #c87941;
+  --chatgpt: #19c37d;
+  --gemini: #4f8ef7; 
+  --danger: #c84141;
+  --overlay: rgba(0, 0, 0, 0.7);
+  --highlight: rgba(200, 169, 110, 0.25);
+  --drop-hover: rgba(200, 169, 110, 0.05);
+  --import-claude: rgba(200, 121, 65, 0.15);
+  --import-chatgpt: rgba(25, 195, 125, 0.15);
+  --import-gemini: rgba(79, 142, 247, 0.12);  
+}
