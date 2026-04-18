@@ -214,19 +214,44 @@ On cPanel hosting, you can usually enable OPcache under **Software → Select PH
 If you use Nginx instead of Apache, add this to your server block:
 
 ```nginx
-location /php/ {
-    deny all;
-}
+# Block direct access to PHP includes and config
+location = /config.php { deny all; }
+location /php/         { deny all; }
 
+# Clean URLs
 location / {
     try_files $uri $uri/ /index.php?$query_string;
 }
 
+# PHP
 location ~ \.php$ {
     fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;
     fastcgi_index index.php;
     include fastcgi_params;
     fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+    # PHP responses — never cache
+    add_header Cache-Control "no-store, no-cache, must-revalidate";
+    add_header Pragma "no-cache";
+}
+
+# Static assets — cache for 1 year
+location ~* \.(css|js|woff2?|ttf|eot|ico|svg|png|jpg|jpeg|gif|webp)$ {
+    expires 1y;
+    add_header Cache-Control "public, max-age=31536000, immutable";
+}
+
+# Security headers
+add_header X-Content-Type-Options "nosniff";
+add_header X-Frame-Options "SAMEORIGIN";
+add_header Referrer-Policy "same-origin";
+```
+
+For a subdirectory install (e.g. `yourdomain.com/app/`), replace the `location /` block with:
+
+```nginx
+location /app/ {
+    try_files $uri $uri/ /app/index.php?$query_string;
 }
 ```
 
