@@ -11,7 +11,7 @@ DirectoryIndex index.php
 
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /app/
+    RewriteBase /
 
     # ── Clean URLs ────────────────────────────────────────────────────────────────
     RewriteRule ^$ index.php [L]

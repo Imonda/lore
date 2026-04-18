@@ -12,7 +12,7 @@ define('SESSION_LIFETIME', 60 * 60 * 24 * 7); // 7 days
 
 // Base path — set to '/' if installed in root, or '/app' if installed in a subdirectory.
 // No trailing slash.
-define('APP_BASE', '/app');
+define('APP_BASE', '');
 
 // Brute-force protection
 define('LOGIN_MAX_ATTEMPTS',     5);    // max failed attempts before lockout
