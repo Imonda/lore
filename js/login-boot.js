@@ -11,6 +11,7 @@ if (loginForm) {
     if (!el) return;
 
     const payload  = JSON.parse(el.dataset.payload);
+    const base     = el.dataset.base ?? '';
     const password = sessionStorage.getItem('lore_pw_tmp') || '';
     sessionStorage.removeItem('lore_pw_tmp');
 
@@ -26,9 +27,9 @@ if (loginForm) {
         const raw = await crypto.subtle.exportKey('raw', masterKey);
         sessionStorage.setItem('lore_mk', btoa(String.fromCharCode(...new Uint8Array(raw))));
 
-        window.location.href = '/';
+        window.location.href = base + '/';
     } catch (e) {
         alert('Failed to decrypt your keys. Wrong password? ' + e.message);
-        window.location.href = '/login';
+        window.location.href = base + '/login';
     }
 })();

@@ -3,7 +3,7 @@ require_once __DIR__ . '/php/auth.php';
 session_start_secure();
 
 if (current_user()) {
-    header('Location: /');
+    header('Location: ' . APP_BASE . '/');
     exit;
 }
 
@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $result = register_user($username, $password, $email, $encrypted_master_key, $recovery_encrypted_master, $pbkdf2_salt);
         if ($result['ok']) {
-            header('Location: /login?registered=1');
+            header('Location: ' . APP_BASE . '/login?registered=1');
             exit;
         }
         $error = $result['error'];
@@ -39,10 +39,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Lore</title>
-    <link rel="stylesheet" href="/css/dark.css">
-    <link rel="stylesheet" href="/css/light.css">
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/dark.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/light.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/style.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/auth.css">
 </head>
 <body class="auth-page">
 
@@ -70,7 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="email" id="email" autocomplete="email">
             </div>
             <button class="btn primary full" id="btn-next">Continue →</button>
-            <div class="auth-link">Already have an account? <a href="/login">Sign in</a></div>
+            <div class="auth-link">Already have an account? <a href="<?= APP_BASE ?>/login">Sign in</a></div>
         </div>
 
         <!-- Step 2: emergency kit -->
@@ -108,8 +108,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<script src="/js/crypto.js"></script>
-<script src="/js/theme.js"></script>
+<script src="<?= APP_BASE ?>/js/crypto.js"></script>
+<script src="<?= APP_BASE ?>/js/theme.js"></script>
 <script>
 // ── Registration flow ─────────────────────────────────────────────────────────
 

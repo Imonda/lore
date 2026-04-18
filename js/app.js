@@ -18,10 +18,12 @@ const App = {
 
 // ── Master key ────────────────────────────────────────────────────────────────
 
+const APP_BASE = document.getElementById('app-config')?.dataset.base ?? '';
+
 async function getMasterKey() {
     if (App.masterKey) return App.masterKey;
     const b64 = sessionStorage.getItem('lore_mk');
-    if (!b64) { window.location.href = '/logout'; return null; }
+    if (!b64) { window.location.href = APP_BASE + '/logout'; return null; }
     const raw = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
     App.masterKey = await crypto.subtle.importKey(
         'raw', raw, { name: 'AES-GCM', length: 256 }, false, ['encrypt', 'decrypt']
@@ -392,7 +394,7 @@ async function openConversation(id) {
 
     if (!messages.length) {
         const mk  = await getMasterKey();
-        const res = await fetch('/php/api.php', {
+        const res = await fetch(APP_BASE + '/php/api.php', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify({ action: 'get_messages', conversation_id: id }),
@@ -823,7 +825,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Logout
     document.getElementById('btn-logout').addEventListener('click', () => {
-        window.location.href = '/logout';
+        window.location.href = APP_BASE + '/logout';
     });
 
     boot();

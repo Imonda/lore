@@ -10,10 +10,10 @@ $username = current_user()['username'];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lore - Your private AI archive</title>
-    <link rel="stylesheet" href="/css/dark.css">
-    <link rel="stylesheet" href="/css/light.css">
-    <link rel="stylesheet" href="/css/style.css">
-    <script src="/js/theme.js"></script>
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/dark.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/light.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/style.css">
+    <script src="<?= APP_BASE ?>/js/theme.js"></script>
 </head>
 <body>
 
@@ -439,12 +439,13 @@ $username = current_user()['username'];
 
 <!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-<script src="/js/crypto.js"></script>
-<script src="/js/db.js"></script>
-<script src="/js/search.js"></script>
-<script src="/js/import.js"></script>
-<script src="/js/app.js"></script>
-<script src="/js/export.js"></script>
+<div id="app-config" data-base="<?= APP_BASE ?>" style="display:none"></div>
+<script src="<?= APP_BASE ?>/js/crypto.js"></script>
+<script src="<?= APP_BASE ?>/js/db.js"></script>
+<script src="<?= APP_BASE ?>/js/search.js"></script>
+<script src="<?= APP_BASE ?>/js/import.js"></script>
+<script src="<?= APP_BASE ?>/js/app.js"></script>
+<script src="<?= APP_BASE ?>/js/export.js"></script>
 <script>
 // ── Encrypted Lore import — password prompt ───────────────
 let _pendingEncryptedFile = null;
@@ -533,7 +534,7 @@ document.getElementById('btn-settings-theme').addEventListener('click', () => {
 
 // Settings → Sign out
 document.getElementById('btn-settings-signout').addEventListener('click', () => {
-    window.location.href = '/logout';
+    window.location.href = '<?= APP_BASE ?>/logout';
 });
 
 // ── Settings panel ────────────────────────────────────────

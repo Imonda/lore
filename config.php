@@ -10,6 +10,10 @@ define('DB_PORT', 3306);
 define('APP_NAME', 'Lore');
 define('SESSION_LIFETIME', 60 * 60 * 24 * 7); // 7 days
 
+// Base path — set to '/' if installed in root, or '/app' if installed in a subdirectory.
+// No trailing slash.
+define('APP_BASE', '/app');
+
 // Brute-force protection
 define('LOGIN_MAX_ATTEMPTS',     5);    // max failed attempts before lockout
 define('LOGIN_WINDOW_SECONDS',   900);  // 15 min — sliding window for counting attempts

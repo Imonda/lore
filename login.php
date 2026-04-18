@@ -3,7 +3,7 @@ require_once __DIR__ . '/php/auth.php';
 session_start_secure();
 
 if (current_user()) {
-    header('Location: /');
+    header('Location: ' . APP_BASE . '/');
     exit;
 }
 
@@ -38,10 +38,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign in - Lore</title>
-    <link rel="stylesheet" href="/css/dark.css">
-    <link rel="stylesheet" href="/css/light.css">
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/dark.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/light.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/style.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/auth.css">
 </head>
 <body class="auth-page">
 
@@ -72,19 +72,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </form>
 
         <div class="auth-link">
-            <a href="/recover">Forgot password?</a>
+            <a href="<?= APP_BASE ?>/recover">Forgot password?</a>
             &nbsp;·&nbsp;
-            <a href="/register">Create account</a>
+            <a href="<?= APP_BASE ?>/register">Create account</a>
         </div>
     </div>
 </div>
 
 <?php if (!empty($login_payload)): ?>
-<div id="login-payload" data-payload="<?= htmlspecialchars($login_payload, ENT_QUOTES) ?>" style="display:none"></div>
+<div id="login-payload"
+     data-payload="<?= htmlspecialchars($login_payload, ENT_QUOTES) ?>"
+     data-base="<?= APP_BASE ?>"
+     style="display:none"></div>
 <?php endif; ?>
-<script src="/js/crypto.js"></script>
-<script src="/js/login-boot.js"></script>
-
-<script src="/js/theme.js"></script>
+<script src="<?= APP_BASE ?>/js/crypto.js"></script>
+<script src="<?= APP_BASE ?>/js/login-boot.js"></script>
+<script src="<?= APP_BASE ?>/js/theme.js"></script>
 </body>
 </html>

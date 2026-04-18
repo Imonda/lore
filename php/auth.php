@@ -17,7 +17,7 @@ function current_user(): ?array {
 
 function require_auth(): void {
     if (!current_user()) {
-        header('Location: /login');
+        header('Location: ' . APP_BASE . '/login');
         exit;
     }
 }

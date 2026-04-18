@@ -3,7 +3,7 @@ require_once __DIR__ . '/php/auth.php';
 session_start_secure();
 
 if (current_user()) {
-    header('Location: ./');
+    header('Location: ' . APP_BASE . '/');
     exit;
 }
 
@@ -51,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $result = recover_account($username, '', $new_password, $new_encrypted_mk, $new_salt);
             if ($result['ok']) {
-                header('Location: /login?recovered=1');
+                header('Location: ' . APP_BASE . '/login?recovered=1');
                 exit;
             }
             $error = $result['error'];
@@ -65,10 +65,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Account Recovery - Lore</title>
-    <link rel="stylesheet" href="/css/dark.css">
-    <link rel="stylesheet" href="/css/light.css">
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="/css/auth.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/dark.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/light.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/style.css">
+    <link rel="stylesheet" href="<?= APP_BASE ?>/css/auth.css">
 </head>
 <body class="auth-page">
 
@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <button type="submit" class="btn primary full">Continue →</button>
         </form>
-        <div class="auth-link"><a href="/login">← Back to sign in</a></div>
+        <div class="auth-link"><a href="<?= APP_BASE ?>/login">← Back to sign in</a></div>
 
         <?php elseif ($step === 'reset'): ?>
         <!-- Step 2: enter recovery phrase + new password -->
@@ -118,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <button class="btn primary full" id="btn-recover">Reset password</button>
-        <div class="auth-link"><a href="/login">← Back to sign in</a></div>
+        <div class="auth-link"><a href="<?= APP_BASE ?>/login">← Back to sign in</a></div>
 
         <!-- Hidden form submitted after client-side crypto -->
         <form id="recover-form" method="POST" style="display:none">
@@ -129,7 +129,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="hidden" name="new_pbkdf2_salt" id="f-new-salt">
         </form>
 
-        <script src="/js/crypto.js"></script>
+        <script src="<?= APP_BASE ?>/js/crypto.js"></script>
         <script>
         const PAYLOAD = JSON.parse('<?= $payload ?>');
 
@@ -172,6 +172,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 </div>
 
-<script src="/js/theme.js"></script>
+<script src="<?= APP_BASE ?>/js/theme.js"></script>
 </body>
 </html>

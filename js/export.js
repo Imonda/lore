@@ -27,8 +27,9 @@ const Exporter = (() => {
     // ── Fetch & decrypt all data ──────────────────────────────────────────────
 
     async function fetchAllDecrypted(masterKey, onProgress) {
+        const base = document.getElementById('app-config')?.dataset.base ?? '';
         // 1. Get conversation list (encrypted titles)
-        const res = await fetch('/php/api.php', {
+        const res = await fetch(base + '/php/api.php', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify({ action: 'get_conversations' }),
@@ -47,7 +48,7 @@ const Exporter = (() => {
             const title = await Crypto.decryptData(masterKey, conv.title);
 
             // Fetch messages
-            const msgRes = await fetch('/php/api.php', {
+            const msgRes = await fetch(base + '/php/api.php', {
                 method:  'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body:    JSON.stringify({ action: 'get_messages', conversation_id: conv.id }),

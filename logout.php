@@ -2,6 +2,7 @@
 require_once __DIR__ . '/php/auth.php';
 session_start_secure();
 logout_user();
+$base = APP_BASE;
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -15,9 +16,9 @@ logout_user();
 sessionStorage.removeItem('lore_mk');
 
 const req = indexedDB.deleteDatabase('lore');
-req.onsuccess = () => { window.location.href = '/login'; };
-req.onerror   = () => { window.location.href = '/login'; };
-req.onblocked = () => { window.location.href = '/login'; };
+req.onsuccess = () => { window.location.href = '<?= $base ?>/login'; };
+req.onerror   = () => { window.location.href = '<?= $base ?>/login'; };
+req.onblocked = () => { window.location.href = '<?= $base ?>/login'; };
 </script>
 </body>
 </html>

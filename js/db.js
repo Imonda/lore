@@ -113,7 +113,8 @@ const DB = (() => {
     // ── Seed from server (on login) ───────────────────────────────────────────
 
     async function seedFromServer(masterKey) {
-        const res  = await fetch('/php/api.php', {
+        const base = document.getElementById('app-config')?.dataset.base ?? '';
+        const res  = await fetch(base + '/php/api.php', {
             method:  'POST',
             headers: { 'Content-Type': 'application/json' },
             body:    JSON.stringify({ action: 'get_conversations' }),
