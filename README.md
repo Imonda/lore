@@ -1,4 +1,4 @@
-# Lore
+# Lore - Your private AI archive
 
 Self-hosted archive for your AI conversations. Import exports from Claude, ChatGPT, and Gemini, search them instantly, and keep everything private on your own server.
 
