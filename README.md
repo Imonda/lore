@@ -39,6 +39,11 @@ define('DB_PORT', 3306);
 // App
 define('APP_NAME', 'Lore');
 define('SESSION_LIFETIME', 60 * 60 * 24 * 7); // 7 days
+// Brute-force protection
+define('LOGIN_MAX_ATTEMPTS',    5);    // failed attempts before lockout
+define('LOGIN_WINDOW_SECONDS',  900);  // sliding window (15 min)
+define('LOGIN_LOCKOUT_SECONDS', 900);  // lockout duration (15 min)
+define('LOGIN_DELAY_BASE',      1);    // progressive delay base in seconds
 ```
 
 ### 3. Upload files
@@ -73,6 +78,9 @@ Generated at registration. Contains a recovery phrase that can decrypt your mast
 
 **Account recovery:**
 If you forget your password, go to `/recover` and upload your Emergency Kit file. Your master key will be re-wrapped with a new password. Your data is preserved.
+
+**Brute-force protection:**
+Failed login attempts are tracked per IP address and username. After 5 failed attempts within 15 minutes, the account is locked out for 15 minutes. A progressive delay (1s → 2s → 4s...) is applied starting from the 3rd failed attempt to slow down automated attacks. Thresholds are configurable in `config.php`.
 
 ---
 
