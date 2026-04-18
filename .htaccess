@@ -1,13 +1,17 @@
 # Lore — Apache configuration
+# If installed in a subdirectory (e.g. /app), change RewriteBase to match.
+# If installed in root, set RewriteBase to /.
 
 # Deny direct access to PHP includes and config
 <FilesMatch "^(config\.php)$">
     Require all denied
 </FilesMatch>
 
+DirectoryIndex index.php
+
 <IfModule mod_rewrite.c>
     RewriteEngine On
-    RewriteBase /
+    RewriteBase /app/
 
     # ── Clean URLs ────────────────────────────────────────────────────────────────
     RewriteRule ^$ index.php [L]
