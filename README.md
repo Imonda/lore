@@ -1,4 +1,4 @@
-# Lore - Your private AI archive
+# Lore
 
 Self-hosted archive for your AI conversations. Import exports from Claude, ChatGPT, and Gemini, search them instantly, and keep everything private on your own server.
 
@@ -29,14 +29,16 @@ mysql -u root -p lore < schema.sql
 Copy `config.php` and fill in your values:
 
 ```php
+<?php
+// Database
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'lore');
 define('DB_USER', 'your_db_user');
 define('DB_PASS', 'your_db_password');
-
-// Generate a random secret:
-// php -r "echo base64_encode(random_bytes(32));"
-define('SERVER_SECRET', 'your_generated_secret');
+define('DB_PORT', 3306);
+// App
+define('APP_NAME', 'Lore');
+define('SESSION_LIFETIME', 60 * 60 * 24 * 7); // 7 days
 ```
 
 ### 3. Upload files
