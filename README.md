@@ -103,12 +103,30 @@ The ZIP is processed entirely in your browser. It is never uploaded to the serve
 
 ## Exporting conversations
 
-Go to **Settings → Export** to download all your conversations as a ZIP file.
+Go to **Settings → Export conversations** to download all your conversations as a ZIP file.
 
 Two modes are available:
 
 - **Plaintext** — human-readable JSON, no password required. Use for backups you want to read directly or migrate elsewhere.
 - **Encrypted** — AES-256-GCM, protected by a password you choose. The server never sees the password or the plaintext. Use for long-term backups or moving data between Lore instances.
+
+### Stats report
+
+**Settings → Export stats report** downloads a lightweight JSON summary of your archive — conversation count, message count, active days, per-source breakdown, and activity data. No conversation content is included. Useful for analytics or migrating metadata without exposing your archive.
+
+---
+
+## Archive overview
+
+The main screen shows a dashboard of your archive:
+
+- **Conversations** — total number of imported conversations
+- **Messages** — total number of messages across all conversations
+- **Active days** — number of days on which at least one conversation took place
+- **Avg msg / conv** — average number of messages per conversation
+- **Sources** — breakdown by AI (Claude, ChatGPT, Gemini) with percentage bars
+- **Activity heatmap** — last 12 months of activity, one cell per day
+- **Recently added** — latest imported conversations with source, date, and message count
 
 ---
 
@@ -125,6 +143,14 @@ When you log in, your conversations are decrypted and cached locally in IndexedD
 Lore supports **dark mode** (default) and **light mode**. The toggle is in the Settings panel (⚙ icon in the header).
 
 On mobile, the sidebar and conversation view switch to full-screen panels with slide animation.
+
+### Settings panel
+
+The ⚙ Settings panel (top right) contains:
+
+- **Export conversations** — download your archive as a ZIP file
+- **Export stats report** — download a JSON summary of your archive (no conversation content)
+- **Clear local cache** — rebuilds IndexedDB on next load; server data is not affected
 
 ---
 
