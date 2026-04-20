@@ -1,3 +1,63 @@
+# Lore — your private AI memory
+
+Lore is a private memory for your AI conversations.
+
+Import your ChatGPT, Claude, and Gemini history, search everything instantly, and never lose context again.
+
+Your data stays fully private — encrypted in your browser before it ever reaches the server.
+
+---
+
+## Why Lore?
+
+AI conversations disappear.
+
+You have ideas, insights, decisions — and then they're gone.  
+Search is limited, memory resets, and context is lost.
+
+Lore fixes that.
+
+It turns your conversations into a searchable, private archive that becomes more valuable over time.
+
+---
+
+## What can you use it for?
+
+- Keep long-term memory of your AI conversations  
+- Build a personal knowledge base from ChatGPT / Claude / Gemini  
+- Search past ideas, answers, and insights instantly  
+- Track how your thinking evolves over time  
+- Keep everything private and under your control  
+
+---
+
+## Key features
+
+- Import conversations from ChatGPT, Claude, and Gemini  
+- Instant search (runs locally in your browser)  
+- Client-side encryption (your data is encrypted before upload)  
+- Self-hosted — your data stays on your server  
+- Export your archive anytime (plaintext or encrypted)  
+- Activity stats and archive overview  
+
+---
+
+## Privacy first
+
+Lore uses client-side encryption inspired by Bitwarden.
+
+- Your conversations are encrypted in the browser (AES-GCM)  
+- Your encryption key never leaves your device  
+- The server never sees your plaintext data  
+- Even backups can be encrypted with your own password  
+
+If you lose your password and recovery kit, your data is unrecoverable — by design.
+
+---
+
+
+---
+
 # Lore - Your private AI archive
 
 Self-hosted archive for your AI conversations. Import exports from Claude, ChatGPT, and Gemini, search them instantly, and keep everything private on your own server.
