@@ -55,17 +55,6 @@ If you lose your password and recovery kit, your data is unrecoverable — by de
 
 ---
 
-
----
-
-# Lore - Your private AI archive
-
-Self-hosted archive for your AI conversations. Import exports from Claude, ChatGPT, and Gemini, search them instantly, and keep everything private on your own server.
-
-All data is encrypted in the browser before it reaches the server. Your encryption key never leaves your device.
-
----
-
 ## Requirements
 
 - PHP 8.1+
