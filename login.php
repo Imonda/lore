@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="auth-wrap">
     <div class="auth-box">
         <div class="auth-logo">LORE<span>.</span></div>
-        <div class="auth-subtitle">Your private AI archive</div>
+        <div class="auth-subtitle">Your private AI memory</div>
 
         <?php if ($registered): ?>
             <div class="auth-success">Account created. Sign in to continue.</div>
