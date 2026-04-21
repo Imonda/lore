@@ -12,7 +12,7 @@ Your data stays fully private — encrypted in your browser before it ever reach
 
 ### Find anything in your AI chats instantly
 
-<video src="assets/demo.mp4" controls width="100%"></video>
+https://github.com/user-attachments/assets/1a7b5ee6-d8dc-4846-928f-fd8c59eb8213
 
 ---
 
