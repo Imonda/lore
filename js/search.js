@@ -1,6 +1,8 @@
 /**
  * search.js — Local full-text search over decrypted IndexedDB cache
- * No server requests — instant results.
+ * No server requests during search — instant results.
+ * Index is built in background after login, fetching messages from server
+ * and extracting plain text from all block types (Claude JSON, plain text, etc.)
  */
 
 const Search = (() => {
@@ -15,6 +17,37 @@ const Search = (() => {
             .filter(w => w.length > 1);
     }
 
+    // ── Strip HTML tags from a string ────────────────────────────────────────
+
+    function stripHtml(str) {
+        return str.replace(/<[^>]*>/g, ' ');
+    }
+
+    // ── Extract plain text from a message content string ──────────────────────
+    // content can be:
+    //   - a JSON array of blocks (Claude): [{type:'text',text:'...'}, ...]
+    //   - a plain string possibly containing HTML (Gemini, ChatGPT, Le Chat)
+
+    function extractText(content) {
+        if (!content) return '';
+        try {
+            const parsed = JSON.parse(content);
+            if (Array.isArray(parsed)) {
+                return parsed.map(block => {
+                    if (block.type === 'text')        return stripHtml(block.text || '');
+                    if (block.type === 'thinking')     return stripHtml(block.text || '');
+                    if (block.type === 'tool_result')  return stripHtml(block.text || '');
+                    if (block.type === 'tool_use')     return block.label || '';
+                    if (block.type === 'code')         return block.code || '';
+                    return '';
+                }).join(' ');
+            }
+        } catch (_) {
+            // not JSON — treat as plain text (strip HTML just in case)
+        }
+        return stripHtml(content);
+    }
+
     // ── Score a conversation against a query ──────────────────────────────────
 
     function scoreConversation(conv, tokens) {
@@ -22,26 +55,73 @@ const Search = (() => {
         const titleTokens = tokenize(conv.title);
 
         for (const token of tokens) {
-            // Title match — higher weight
-            if (titleTokens.some(t => t.includes(token))) score += 10;
+            // Title match — higher weight (prefix match: "sess" hits "session", not mid-word)
+            if (titleTokens.some(t => t === token || t.startsWith(token))) score += 10;
 
-            // Message content match
-            if (conv._searchText && conv._searchText.includes(token)) score += 1;
+            // Message content match — prefix match: "sess" hits "session" but not mid-word like "tor" in "decorator"
+            if (conv._searchText) {
+                const wordRe = new RegExp('(?:^|\\s)' + escapeRegex(token) + '\\w*(?:\\s|$)');
+                if (wordRe.test(conv._searchText)) score += 1;
+            }
         }
         return score;
     }
 
-    // ── Build search index (called once after IndexedDB seed) ─────────────────
+    // ── Fetch and decrypt messages for a conversation from server ─────────────
 
-    async function buildIndex(conversations) {
-        for (const conv of conversations) {
-            const messages = await DB.getMessages(conv.id);
-            conv._searchText = messages
-                .map(m => m.content)
-                .join(' ')
-                .toLowerCase()
-                .replace(/[^\w\s]/g, ' ');
+    async function fetchMessages(convId, masterKey) {
+        const base = document.getElementById('app-config')?.dataset.base ?? '';
+        const res  = await fetch(base + '/php/api.php', {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ action: 'get_messages', conversation_id: convId }),
+        });
+        const data = await res.json();
+        if (!data.ok) return [];
+
+        return Promise.all(data.messages.map(async msg => ({
+            ...msg,
+            content: await Crypto.decryptData(masterKey, msg.content),
+        })));
+    }
+
+    // ── Build search index (called once after boot, runs in background) ────────
+    // masterKey is required to decrypt messages that haven't been opened yet.
+    // We first try IndexedDB (already cached), then fall back to server fetch.
+    // Processed in small batches to avoid blocking the main thread.
+
+    async function buildIndex(conversations, masterKey) {
+        const BATCH = 10;
+
+        for (let i = 0; i < conversations.length; i += BATCH) {
+            const batch = conversations.slice(i, i + BATCH);
+
+            await Promise.all(batch.map(async conv => {
+                // Initialize to empty so searches during indexing don't error
+                if (!conv._searchText) conv._searchText = '';
+
+                // Try IndexedDB first
+                let messages = await DB.getMessages(conv.id);
+
+                // If empty (not yet opened) — fetch from server and cache
+                if (!messages.length && masterKey) {
+                    messages = await fetchMessages(conv.id, masterKey);
+                    if (messages.length) {
+                        await DB.saveConversation({ ...conv, messages });
+                    }
+                }
+
+                conv._searchText = messages
+                    .map(m => extractText(m.content))
+                    .join(' ')
+                    .toLowerCase()
+                    .replace(/[^\w\s]/g, ' ');
+            }));
+
+            // Yield to browser between batches
+            await new Promise(r => setTimeout(r, 0));
         }
+
         return conversations;
     }
 

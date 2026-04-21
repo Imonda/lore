@@ -55,7 +55,7 @@ async function boot() {
     renderSidebarSummary();
 
     setTimeout(async () => {
-        await Search.buildIndex(App.conversations);
+        await Search.buildIndex(App.conversations, mk);
         App.indexed = true;
     }, 0);
 }
@@ -459,7 +459,15 @@ function renderMessages(messages, conv) {
             const hint = document.createElement('span');
             hint.className   = 'copy-hint';
             hint.textContent = 'click to copy';
-            body.innerHTML = Search.highlight(msg.content, App.searchQuery);
+            // If content already contains HTML tags (old imports/backups), inject directly.
+            // Otherwise render as markdown so formatting works correctly.
+            const looksLikeHtml = /<[a-z][\w-]*[\s>]/i.test(msg.content);
+            if (looksLikeHtml) {
+                body.innerHTML = msg.content;
+            } else {
+                body.innerHTML = renderMarkdown(msg.content, App.searchQuery);
+            }
+            highlightTextNodes(body, App.searchQuery);
             body.appendChild(hint);
             body.addEventListener('click', () => copyToClipboard(msg.content, body));
         }
@@ -511,11 +519,31 @@ function renderMarkdown(text, searchQuery) {
 
     html = html.replace(/^---+$/gm, '<hr class="md-hr">');
 
-    if (searchQuery) {
-        html = Search.highlight(html, searchQuery);
-    }
-
     return html;
+}
+
+// ── Highlight search terms in rendered HTML (text nodes only) ────────────────────
+// Walks DOM text nodes so HTML tags are never broken.
+
+function highlightTextNodes(el, query) {
+    if (!query.trim()) return;
+    const tokens  = query.toLowerCase().replace(/[^\w\s]/g, ' ').split(/\s+/).filter(w => w.length > 1);
+    if (!tokens.length) return;
+    const pattern = tokens.map(t => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+    const regex   = new RegExp('(' + pattern + '\\w*)', 'gi');
+
+    const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT, null);
+    const nodes  = [];
+    let node;
+    while ((node = walker.nextNode())) nodes.push(node);
+
+    for (const textNode of nodes) {
+        if (!regex.test(textNode.textContent)) continue;
+        regex.lastIndex = 0;
+        const span = document.createElement('span');
+        span.innerHTML = textNode.textContent.replace(regex, '<mark class="highlight">$1</mark>');
+        textNode.parentNode.replaceChild(span, textNode);
+    }
 }
 
 // ── Block renderer ────────────────────────────────────────────────────────────
@@ -528,6 +556,7 @@ function renderBlocks(blocks, rawContent) {
             const p = document.createElement('div');
             p.className = 'msg-text';
             p.innerHTML = renderMarkdown(block.text, App.searchQuery);
+            highlightTextNodes(p, App.searchQuery);
             const hint = document.createElement('span');
             hint.className   = 'copy-hint';
             hint.textContent = 'click to copy';
