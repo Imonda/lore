@@ -667,8 +667,8 @@ function resetImportModal() {
 }
 
 async function handleImportFile(file) {
-    if (!file || !file.name.endsWith('.zip')) {
-        showToast('Please select a .zip file');
+    if (!file || (!file.name.endsWith('.zip') && !file.name.endsWith('.html'))) {
+        showToast('Please select a .zip or .html file');
         return;
     }
 
@@ -777,6 +777,11 @@ document.addEventListener('DOMContentLoaded', () => {
             document.querySelectorAll('.import-tab-content').forEach(c => c.classList.remove('active'));
             tab.classList.add('active');
             document.querySelector(`.import-tab-content[data-source="${tab.dataset.source}"]`).classList.add('active');
+
+            // ChatGPT supports both ZIP and HTML
+            const acceptsHtml = tab.dataset.source === 'chatgpt' || tab.dataset.source === 'gemini';
+            document.getElementById('file-input').accept = acceptsHtml ? '.zip,.html' : '.zip';
+            document.querySelector('.modal-drop-label').textContent = acceptsHtml ? 'Drop ZIP or HTML here' : 'Drop ZIP here';
         });
     });
 
@@ -805,7 +810,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('drop', e => {
         e.preventDefault();
         const file = e.dataTransfer.files[0];
-        if (file?.name.endsWith('.zip')) {
+        if (file?.name.endsWith('.zip') || file?.name.endsWith('.html')) {
             openImportModal();
             setTimeout(() => handleImportFile(file), 100);
         }

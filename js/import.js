@@ -33,7 +33,6 @@ const Importer = (() => {
 
     async function detectSource(zip) {
         const names = Object.keys(zip.files).map(n => n.toLowerCase());
-        console.log('[Lore] ZIP contents:', names);
 
         // Gemini Takeout — check first (has My Activity.html, not conversations.json)
         if (names.some(n => n.includes('my activity.html') || n.includes('my_activity.html') || n.includes('myactivity.html'))) return 'gemini';
@@ -71,6 +70,9 @@ const Importer = (() => {
             if (first.create_time !== undefined || first.mapping !== undefined) return 'chatgpt';
         }
 
+        // ChatGPT HTML export (chat.html or chatgpt.html with embedded jsonData)
+        if (names.some(n => (n === 'chat.html' || n === 'chatgpt.html' || n.endsWith('/chat.html') || n.endsWith('/chatgpt.html')))) return 'chatgpt-html';
+
         return 'unknown';
     }
 
@@ -82,9 +84,11 @@ const Importer = (() => {
             return l.includes('my activity.html') || l.includes('my_activity.html') || l.includes('myactivity.html');
         });
         if (!htmlName) throw new Error('My Activity.html not found in Gemini export');
-
         const raw = await zip.file(htmlName).async('string');
+        return parseGeminiRaw(raw);
+    }
 
+    async function parseGeminiRaw(raw) {
         const parser = new DOMParser();
         const doc = parser.parseFromString(raw, 'text/html');
 
@@ -92,22 +96,24 @@ const Importer = (() => {
         const blocks = doc.querySelectorAll('.outer-cell');
         console.log('[Lore] Gemini blocks found:', blocks.length);
 
+        let blockIndex = 0;
+        let skipped = 0;
         for (const block of blocks) {
             const header = block.querySelector('.header-cell p');
-            if (!header || !header.textContent.includes('Gemini Apps')) continue;
+            if (!header || !header.textContent.includes('Gemini Apps')) { skipped++; continue; }
 
             const contentCell = block.querySelector('.content-cell');
-            if (!contentCell) continue;
+            if (!contentCell) { skipped++; continue; }
 
             // First child node = "Prompted\u00a0<user text>"
             const firstNode = contentCell.childNodes[0];
-            if (!firstNode) continue;
+            if (!firstNode) { skipped++; continue; }
             const firstLine = (firstNode.textContent || '').trim();
 
-            if (!/^Prompted[\s\u00a0]/.test(firstLine)) continue;
+            if (!/^Prompted[\s\u00a0]/.test(firstLine)) { skipped++; continue; }
 
             const userText = firstLine.replace(/^Prompted[\s\u00a0]+/, '').trim();
-            if (!userText) continue;
+            if (!userText) { skipped++; continue; }
 
             // Date: second text node (after first <br>)
             let isoDate = null;
@@ -123,7 +129,7 @@ const Importer = (() => {
                     break;
                 }
             }
-            if (!isoDate) isoDate = new Date().toISOString();
+            if (!isoDate) isoDate = '1970-01-01T00:00:00.000Z';
 
             // Response: collect nodes after the date line (skip: prompt text, br, date text, br)
             // Structure: [TextNode(Prompted...), BR, TextNode(date), BR, ...response...]
@@ -146,7 +152,12 @@ const Importer = (() => {
             const responseText = geminiHtmlToText(responseContainer);
 
             const title = userText.length > 60 ? userText.slice(0, 60).trim() + '\u2026' : userText;
-            const extId = 'gemini_' + btoa(unescape(encodeURIComponent(isoDate + userText))).slice(0, 32).replace(/[^a-zA-Z0-9]/g, '');
+            // ext_id: blockIndex guarantees uniqueness within a single export file
+            // isoDate + userText hash provides stability across re-imports of the same file
+            const hashInput = isoDate + '|' + userText.slice(0, 100);
+            const hashB64 = btoa(unescape(encodeURIComponent(hashInput))).replace(/[^a-zA-Z0-9]/g, '').slice(0, 24);
+            const extId = 'gemini_' + String(blockIndex).padStart(4, '0') + '_' + hashB64;
+            blockIndex++;
 
             const msgs = [];
             msgs.push({ role: 'user',      content: JSON.stringify([{ type: 'text', text: userText }]),     created_at: isoDate });
@@ -164,7 +175,7 @@ const Importer = (() => {
             });
         }
 
-        console.log('[Lore] Gemini conversations parsed:', conversations.length);
+        console.log('[Lore] Gemini conversations parsed:', conversations.length, '| skipped blocks:', skipped);
         if (!conversations.length) throw new Error('No Gemini conversations found');
         return conversations;
     }
@@ -386,6 +397,61 @@ const Importer = (() => {
         return map[ext] || 'plaintext';
     }
 
+    // ── ChatGPT HTML parser (chat.html with embedded jsonData) ────────────────
+
+    async function parseChatGPTHtml(zip) {
+        const htmlName = Object.keys(zip.files).find(n => n === 'chat.html' || n.endsWith('/chat.html') || n === 'chatgpt.html' || n.endsWith('/chatgpt.html'));
+        if (!htmlName) throw new Error('chat.html not found in ChatGPT export');
+        const raw = await zip.file(htmlName).async('string');
+        return parseChatGPTHtmlRaw(raw);
+    }
+
+    async function parseChatGPTHtmlRaw(raw) {
+        // jsonData is assigned on one line: var jsonData = [{...}, {...}];
+        // Walk characters counting bracket depth to find exact array bounds
+        const varIdx = raw.indexOf('var jsonData = [');
+        if (varIdx === -1) throw new Error('jsonData not found in chat.html');
+
+        const arrStart = raw.indexOf('[', varIdx);
+        if (arrStart === -1) throw new Error('jsonData not found in chat.html');
+
+        let depth = 0;
+        let arrEnd = -1;
+        let inString = false;
+        let escape = false;
+        for (let i = arrStart; i < raw.length; i++) {
+            const ch = raw[i];
+            if (escape) { escape = false; continue; }
+            if (ch === '\\' && inString) { escape = true; continue; }
+            if (ch === '"') { inString = !inString; continue; }
+            if (inString) continue;
+            if (ch === '[' || ch === '{') depth++;
+            else if (ch === ']' || ch === '}') {
+                depth--;
+                if (depth === 0) { arrEnd = i + 1; break; }
+            }
+        }
+        if (arrEnd === -1) throw new Error('jsonData array not closed in chat.html');
+
+        let data;
+        try {
+            data = JSON.parse(raw.slice(arrStart, arrEnd));
+        } catch (e) {
+            throw new Error('Failed to parse jsonData from chat.html: ' + e.message);
+        }
+
+        if (!Array.isArray(data)) throw new Error('jsonData is not an array');
+
+        return data.map(conv => ({
+            source:     'chatgpt',
+            ext_id:     conv.id,
+            title:      conv.title || 'Untitled',
+            created_at: conv.create_time ? new Date(conv.create_time * 1000).toISOString() : new Date().toISOString(),
+            updated_at: conv.update_time ? new Date(conv.update_time * 1000).toISOString() : new Date().toISOString(),
+            messages:   parseChatGPTMessages(conv),
+        })).filter(c => c.messages.length > 0);
+    }
+
     // ── ChatGPT parser ────────────────────────────────────────────────────────
 
     async function parseChatGPT(zip) {
@@ -424,8 +490,20 @@ const Importer = (() => {
             if (!['user', 'assistant'].includes(role)) continue;
 
             let text = '';
-            if (msg.content.content_type === 'text' && Array.isArray(msg.content.parts)) {
-                text = msg.content.parts.filter(p => typeof p === 'string').join('\n');
+            if (Array.isArray(msg.content.parts)) {
+                // parts can be strings or objects (newer format)
+                text = msg.content.parts.map(p => {
+                    if (typeof p === 'string') return p;
+                    if (p && typeof p === 'object') {
+                        if (typeof p.text === 'string') return p.text;
+                        if (p.content_type === 'image_asset_pointer') return '[image]';
+                        if (p.content_type === 'audio_asset_pointer') return '[audio]';
+                        if (p.content_type === 'tether_quote' && p.text) return p.text;
+                    }
+                    return '';
+                }).join('\n').trim();
+            } else if (typeof msg.content.text === 'string') {
+                text = msg.content.text.trim();
             }
 
             if (!text.trim()) continue;
@@ -461,7 +539,7 @@ const Importer = (() => {
                     }))
                 );
 
-                const res = await fetch('/php/api.php', {
+                const res = await fetch((document.getElementById('app-config')?.dataset.base ?? '') + '/php/api.php', {
                     method:  'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body:    JSON.stringify({
@@ -476,18 +554,25 @@ const Importer = (() => {
                 });
 
                 const json = await res.json();
+                if (!json.ok && !json.duplicate) {
+                    console.warn('[Lore] API rejected:', conv.ext_id, json);
+                }
                 if (json.ok && !json.duplicate) {
                     // Store decrypted version in IndexedDB cache
-                    await DB.saveConversation({
-                        id:         json.id,
-                        source:     conv.source,
-                        ext_id:     conv.ext_id,
-                        title:      conv.title,
-                        created_at: conv.created_at,
-                        updated_at: conv.updated_at,
-                        msg_count:  conv.messages.length,
-                        messages:   conv.messages,
-                    });
+                    try {
+                        await DB.saveConversation({
+                            id:         json.id,
+                            source:     conv.source,
+                            ext_id:     conv.ext_id,
+                            title:      conv.title,
+                            created_at: conv.created_at,
+                            updated_at: conv.updated_at,
+                            msg_count:  conv.messages.length,
+                            messages:   conv.messages,
+                        });
+                    } catch (dbErr) {
+                        console.error('[Lore] DB.saveConversation failed:', conv.ext_id, dbErr);
+                    }
                     uploaded++;
                 } else if (json.duplicate) {
                     skipped++;
@@ -509,6 +594,18 @@ const Importer = (() => {
 
     async function processZip(file, onProgress, password) {
         const masterKey = await getMasterKey();
+
+        // Direct HTML file — detect Gemini vs ChatGPT by content
+        if (file.name.endsWith('.html')) {
+            const raw = await file.text();
+            const isGemini = raw.includes('outer-cell') || raw.includes('Gemini Apps');
+            const conversations = isGemini
+                ? await parseGeminiRaw(raw)
+                : await parseChatGPTHtmlRaw(raw);
+            if (!conversations.length) throw new Error('No conversations found in this export');
+            return encryptAndUpload(conversations, masterKey, onProgress);
+        }
+
         const zip       = await extractZip(file);
         const source    = await detectSource(zip);
 
@@ -522,6 +619,8 @@ const Importer = (() => {
             conversations = await parseClaude(zip);
         } else if (source === 'chatgpt') {
             conversations = await parseChatGPT(zip);
+        } else if (source === 'chatgpt-html') {
+            conversations = await parseChatGPTHtml(zip);
         } else if (source === 'gemini') {
             conversations = await parseGemini(zip);
         } else {

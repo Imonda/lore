@@ -339,7 +339,7 @@ $username = current_user()['username'];
         </div>
         <div class="import-tab-content" data-source="gemini">
             <div class="import-instructions">
-                In Google: go to <strong>myaccount.google.com → Data &amp; Privacy → Download your data</strong>, select <strong>My Activity</strong>, click <strong>All activity data included</strong>, uncheck everything except <strong>Gemini Apps</strong>, then export. Drop the ZIP below.
+                In Google: go to <strong>myaccount.google.com → Data &amp; Privacy → Download your data</strong>, select <strong>My Activity</strong>, click <strong>All activity data included</strong>, uncheck everything except <strong>Gemini Apps</strong>, then export. Drop the ZIP or extract and drop just the <strong>My Activity.html</strong> file directly.
             </div>
         </div>
 
