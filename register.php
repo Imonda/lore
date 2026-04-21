@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="auth-wrap">
     <div class="auth-box">
         <div class="auth-logo">LORE<span>.</span></div>
-        <div class="auth-subtitle">Create your private archive</div>
+        <div class="auth-subtitle">Start building your AI memory</div>
 
         <?php if ($error): ?>
             <div class="auth-error"><?= htmlspecialchars($error) ?></div>
