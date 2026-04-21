@@ -72,6 +72,12 @@ $username = current_user()['username'];
         </span>
         <span class="filter-label">Gemini</span>
     </button>
+    <button class="filter-btn lechat" data-filter="lechat">
+        <span class="filter-icon">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v6A1.5 1.5 0 0 1 12.5 11H9l-3 3v-3H3.5A1.5 1.5 0 0 1 2 9.5v-6Z" fill="currentColor"/></svg>
+        </span>
+        <span class="filter-label">Le Chat</span>
+    </button>
 </div>
 
 <!-- Layout -->
@@ -319,6 +325,12 @@ $username = current_user()['username'];
                 </span>
                 Gemini
             </button>
+            <button class="import-tab lechat" data-source="lechat">
+                <span class="import-tab-icon">
+                    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 3.5A1.5 1.5 0 0 1 3.5 2h9A1.5 1.5 0 0 1 14 3.5v6A1.5 1.5 0 0 1 12.5 11H9l-3 3v-3H3.5A1.5 1.5 0 0 1 2 9.5v-6Z" fill="currentColor"/></svg>
+                </span>
+                Le Chat
+            </button>
         </div>
 
         <!-- Per-source instructions -->
@@ -340,6 +352,11 @@ $username = current_user()['username'];
         <div class="import-tab-content" data-source="gemini">
             <div class="import-instructions">
                 In Google: go to <strong>myaccount.google.com → Data &amp; Privacy → Download your data</strong>, select <strong>My Activity</strong>, click <strong>All activity data included</strong>, uncheck everything except <strong>Gemini Apps</strong>, then export. Drop the ZIP or extract and drop just the <strong>My Activity.html</strong> file directly.
+            </div>
+        </div>
+        <div class="import-tab-content" data-source="lechat">
+            <div class="import-instructions">
+                In Le Chat: go to <strong>admin.mistral.ai/account/export</strong> and click <strong>Export</strong>. You'll receive a ZIP — drop it below.
             </div>
         </div>
 

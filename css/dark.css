@@ -13,6 +13,7 @@
   --claude: #c87941;
   --chatgpt: #19c37d;
   --gemini: #4f8ef7; 
+  --lechat: #e8601c;
   --danger: #c84141;
   --overlay: rgba(0, 0, 0, 0.7);
   --highlight: rgba(200, 169, 110, 0.25);
@@ -20,4 +21,5 @@
   --import-claude: rgba(200, 121, 65, 0.15);
   --import-chatgpt: rgba(25, 195, 125, 0.15);
   --import-gemini: rgba(79, 142, 247, 0.12);  
+  --import-lechat: rgba(232, 96, 28, 0.13);
 }

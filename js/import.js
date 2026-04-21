@@ -49,6 +49,9 @@ const Importer = (() => {
             if (data.format === 'lore-plaintext') return 'lore-plaintext';
         }
 
+        // Le Chat (Mistral) export — ZIP contains chat-{uuid}.json files
+        if (names.some(n => /^chat-[0-9a-f-]{36}\.json$/.test(n.split('/').pop()))) return 'lechat';
+
         // Check for claude-named file
         if (names.some(n => n.includes('conversations.json') && n.includes('claude'))) return 'claude';
         if (names.some(n => n.endsWith('.json') && n.includes('claude'))) return 'claude';
@@ -219,6 +222,86 @@ const Importer = (() => {
             }
         }
         return text.replace(/\n{3,}/g, '\n\n').trim();
+    }
+
+    // ── Le Chat (Mistral) parser ──────────────────────────────────────────────
+
+    async function parseLeChat(zip) {
+        const chatFiles = Object.keys(zip.files).filter(n =>
+            /^chat-[0-9a-f-]{36}\.json$/.test(n.split('/').pop())
+        );
+        if (!chatFiles.length) throw new Error('No chat-*.json files found in Le Chat export');
+
+        const conversations = [];
+
+        for (const fileName of chatFiles) {
+            const raw = await zip.file(fileName).async('string');
+            let messages;
+            try {
+                messages = JSON.parse(raw);
+            } catch {
+                console.warn('[Lore] Le Chat: failed to parse', fileName);
+                continue;
+            }
+
+            if (!Array.isArray(messages) || !messages.length) continue;
+
+            // Messages are stored newest-first — reverse to get chronological order
+            const sorted = [...messages].sort((a, b) =>
+                new Date(a.createdAt) - new Date(b.createdAt)
+            );
+
+            // ext_id = chatId (UUID from filename / field)
+            const chatId = sorted[0].chatId || fileName.match(/chat-([0-9a-f-]{36})\.json/)?.[1] || fileName;
+
+            // Title = first user message (truncated)
+            const firstUser = sorted.find(m => m.role === 'user');
+            const rawTitle  = firstUser?.content || 'Untitled';
+            const title     = rawTitle.length > 80 ? rawTitle.slice(0, 80).trim() + '\u2026' : rawTitle;
+
+            const created_at = sorted[0].createdAt || new Date().toISOString();
+            const updated_at = sorted[sorted.length - 1].createdAt || created_at;
+
+            const msgs = [];
+            for (const msg of sorted) {
+                if (!['user', 'assistant'].includes(msg.role)) continue;
+
+                // content is plain text string; contentChunks may exist for assistant
+                let text = '';
+                if (Array.isArray(msg.contentChunks) && msg.contentChunks.length) {
+                    text = msg.contentChunks
+                        .filter(c => c.type === 'text')
+                        .map(c => c.text || '')
+                        .join('\n')
+                        .trim();
+                }
+                if (!text && typeof msg.content === 'string') {
+                    text = msg.content.trim();
+                }
+                if (!text) continue;
+
+                msgs.push({
+                    role:       msg.role,
+                    content:    JSON.stringify([{ type: 'text', text }]),
+                    created_at: msg.createdAt || created_at,
+                });
+            }
+
+            if (!msgs.length) continue;
+
+            conversations.push({
+                source:     'lechat',
+                ext_id:     chatId,
+                title,
+                created_at,
+                updated_at,
+                messages:   msgs,
+            });
+        }
+
+        console.log('[Lore] Le Chat conversations parsed:', conversations.length);
+        if (!conversations.length) throw new Error('No Le Chat conversations found');
+        return conversations;
     }
 
         // ── Lore plaintext parser ─────────────────────────────────────────────────
@@ -623,6 +706,8 @@ const Importer = (() => {
             conversations = await parseChatGPTHtml(zip);
         } else if (source === 'gemini') {
             conversations = await parseGemini(zip);
+        } else if (source === 'lechat') {
+            conversations = await parseLeChat(zip);
         } else {
             // Try both parsers
             try {

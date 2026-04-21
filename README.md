@@ -2,7 +2,7 @@
 
 Lore is a private memory for your AI conversations.
 
-Import your ChatGPT, Claude, and Gemini history, search everything instantly, and never lose context again.
+Import your ChatGPT, Claude, Gemini, and Le Chat history, search everything instantly, and never lose context again.
 
 Your data stays fully private — encrypted in your browser before it ever reaches the server.
 
@@ -24,7 +24,7 @@ It turns your conversations into a searchable, private archive that becomes more
 ## What can you use it for?
 
 - Keep long-term memory of your AI conversations  
-- Build a personal knowledge base from ChatGPT / Claude / Gemini  
+- Build a personal knowledge base from ChatGPT / Claude / Gemini / Le Chat  
 - Search past ideas, answers, and insights instantly  
 - Track how your thinking evolves over time  
 - Keep everything private and under your control  
@@ -33,7 +33,7 @@ It turns your conversations into a searchable, private archive that becomes more
 
 ## Key features
 
-- Import conversations from ChatGPT, Claude, and Gemini  
+- Import conversations from ChatGPT, Claude, Gemini, and Le Chat (Mistral)  
 - Instant search (runs locally in your browser)  
 - Client-side encryption (your data is encrypted before upload)  
 - Self-hosted — your data stays on your server  
@@ -170,13 +170,18 @@ Failed login attempts are tracked per IP address and username. After 5 failed at
 **ChatGPT:**
 1. Go to chatgpt.com → Settings → Data controls → Export data
 2. Wait for the email with your ZIP file
-3. In Lore, click **Import** and drop the ZIP
+3. In Lore, click **Import** and drop the ZIP — or extract the ZIP and drop just the `chat.html` file directly
 
 **Gemini:**
 1. Go to myaccount.google.com → Data & privacy → Download your data (Google Takeout)
 2. Select only **Gemini Apps** and export
 3. Wait for the email with your ZIP file
-4. In Lore, click **Import** and drop the ZIP
+4. In Lore, click **Import** and drop the ZIP — or extract the ZIP and drop just the `My Activity.html` file directly
+
+**Le Chat (Mistral):**
+1. Go to admin.mistral.ai/account/export
+2. Click **Export** to download your ZIP file
+3. In Lore, click **Import**, select the **Le Chat** tab, and drop the ZIP
 
 **Lore backup:**
 1. Export your archive from Settings → Export
@@ -210,7 +215,7 @@ The main screen shows a dashboard of your archive:
 - **Messages** — total number of messages across all conversations
 - **Active days** — number of days on which at least one conversation took place
 - **Avg msg / conv** — average number of messages per conversation
-- **Sources** — breakdown by AI (Claude, ChatGPT, Gemini) with percentage bars
+- **Sources** — breakdown by AI (Claude, ChatGPT, Gemini, Le Chat) with percentage bars
 - **Activity heatmap** — last 12 months of activity, one cell per day
 - **Recently added** — latest imported conversations with source, date, and message count
 

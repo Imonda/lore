@@ -168,7 +168,7 @@ function renderDashboard() {
     // ── Sources breakdown ──
     const counts  = {};
     for (const c of convs) counts[c.source] = (counts[c.source] || 0) + 1;
-    const sourceOrder = ['claude', 'chatgpt', 'gemini'];
+    const sourceOrder = ['claude', 'chatgpt', 'gemini', 'lechat'];
     const sourcesEl   = document.getElementById('dash-sources');
     sourcesEl.innerHTML = '';
 
@@ -345,7 +345,7 @@ function openStatsModal() {
     for (const c of convs) counts[c.source] = (counts[c.source] || 0) + 1;
     const sourcesEl = document.getElementById('modal-dash-sources');
     sourcesEl.innerHTML = '';
-    for (const src of ['claude', 'chatgpt', 'gemini']) {
+    for (const src of ['claude', 'chatgpt', 'gemini', 'lechat']) {
         if (!counts[src]) continue;
         const pct = Math.round(counts[src] / convs.length * 100);
         const row = document.createElement('div');
