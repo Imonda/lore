@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS conversations (
     id          INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id     INT UNSIGNED NOT NULL,
-    source      ENUM('claude','chatgpt','gemini') NOT NULL,
+    source      VARCHAR(20) NOT NULL,
     ext_id      VARCHAR(255) NOT NULL,         -- original UUID from export
     title       TEXT NOT NULL,                 -- encrypted title (AES-GCM base64)
     created_at  DATETIME NOT NULL,
