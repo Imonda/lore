@@ -2,7 +2,7 @@
 
 Lore is a private memory for your AI conversations.
 
-Import your ChatGPT, Claude, Gemini, and Le Chat history, search everything instantly, and never lose context again.
+Import your AI conversations (ChatGPT, Claude, Gemini, Le Chat), search everything instantly, and never lose context again.
 
 Your data stays fully private — encrypted in your browser before it ever reaches the server.
 
@@ -18,6 +18,7 @@ Search is limited, memory resets, and context is lost.
 Lore fixes that.
 
 It turns your conversations into a searchable, private archive that becomes more valuable over time.
+Something you can come back to weeks or months later — and still have full context.
 
 ---
 
@@ -34,7 +35,7 @@ It turns your conversations into a searchable, private archive that becomes more
 ## Key features
 
 - Import conversations from ChatGPT, Claude, Gemini, and Le Chat (Mistral)  
-- Instant search (runs locally in your browser)  
+- Search everything instantly (runs locally in your browser)
 - Client-side encryption (your data is encrypted before upload)  
 - Self-hosted — your data stays on your server  
 - Export your archive anytime (plaintext or encrypted)  
