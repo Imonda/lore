@@ -8,6 +8,14 @@ Your data stays fully private — encrypted in your browser before it ever reach
 
 ---
 
+## Demo
+
+### Find anything in your AI chats instantly
+
+<video src="assets/demo.mp4" controls width="100%"></video>
+
+---
+
 ## Why Lore?
 
 AI conversations disappear.
@@ -315,3 +323,4 @@ location /app/ {
 ## License
 
 MIT — do whatever you want with it.
+
