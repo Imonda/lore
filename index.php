@@ -9,7 +9,7 @@ $username = current_user()['username'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lore - Your private AI archive</title>
+    <title>Lore - Your private AI memory</title>
     <link rel="stylesheet" href="<?= APP_BASE ?>/css/dark.css">
     <link rel="stylesheet" href="<?= APP_BASE ?>/css/light.css">
     <link rel="stylesheet" href="<?= APP_BASE ?>/css/style.css">
