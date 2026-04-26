@@ -78,6 +78,12 @@ $username = current_user()['username'];
         </span>
         <span class="filter-label">Le Chat</span>
     </button>
+    <button class="filter-btn deepseek" data-filter="deepseek">
+        <span class="filter-icon">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="8" r="2.5" fill="currentColor"/><circle cx="11" cy="8" r="2.5" fill="currentColor"/><path d="M7.5 8h1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </span>
+        <span class="filter-label">DeepSeek</span>
+    </button>
 </div>
 
 <!-- Layout -->
@@ -331,6 +337,12 @@ $username = current_user()['username'];
                 </span>
                 Le Chat
             </button>
+            <button class="import-tab deepseek" data-source="deepseek">
+                <span class="import-tab-icon">
+                    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="5" cy="8" r="2.5" fill="currentColor"/><circle cx="11" cy="8" r="2.5" fill="currentColor"/><path d="M7.5 8h1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                </span>
+                DeepSeek
+            </button>
         </div>
 
         <!-- Per-source instructions -->
@@ -357,6 +369,11 @@ $username = current_user()['username'];
         <div class="import-tab-content" data-source="lechat">
             <div class="import-instructions">
                 In Le Chat: go to <strong>admin.mistral.ai/account/export</strong> and click <strong>Export</strong>. You'll receive a ZIP — drop it below.
+            </div>
+        </div>
+        <div class="import-tab-content" data-source="deepseek">
+            <div class="import-instructions">
+                In DeepSeek: go to <strong>chat.deepseek.com</strong>, open the menu and choose <strong>Export Data</strong>. You'll receive a ZIP — drop it below.
             </div>
         </div>
 

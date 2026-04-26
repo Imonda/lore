@@ -19,6 +19,7 @@ body {
   --mono: 'Space Mono', monospace;
   --serif: 'Courier Prime', monospace;
   --gemini: #4f8ef7;
+  --deepseek: #4D6BFE;
   --import-gemini: rgba(79, 142, 247, 0.12);
 }
 
@@ -216,6 +217,7 @@ header {
 .filter-btn.chatgpt.active { border-color: var(--chatgpt); color: var(--chatgpt); }
 .filter-btn.gemini.active { border-color: var(--gemini); color: var(--gemini); }
 .filter-btn.lechat.active { border-color: var(--lechat); color: var(--lechat); }
+.filter-btn.deepseek.active { border-color: var(--deepseek); color: var(--deepseek); }
 
 .conv-list {
   flex: 1;
@@ -255,6 +257,7 @@ header {
 .conv-source.chatgpt { color: var(--chatgpt); }
 .conv-source.gemini { color: var(--gemini); }
 .conv-source.lechat { color: var(--lechat); }
+.conv-source.deepseek { color: var(--deepseek); }
 
 .conv-title {
   font-size: 12px;
@@ -1037,6 +1040,7 @@ input[type="file"] { display: none; }
 .import-tab.active.chatgpt { color: var(--chatgpt); border-bottom-color: var(--chatgpt); }
 .import-tab.active.gemini  { color: var(--gemini);  border-bottom-color: var(--gemini);  }
 .import-tab.active.lechat  { color: var(--lechat);  border-bottom-color: var(--lechat);  }
+.import-tab.active.deepseek { color: var(--deepseek); border-bottom-color: var(--deepseek); }
 
 .import-tab-content { display: none; }
 .import-tab-content.active { display: block; }
@@ -1235,6 +1239,7 @@ input[type="file"] { display: none; }
 .dash-source-name.chatgpt { color: var(--chatgpt); }
 .dash-source-name.gemini  { color: var(--gemini); }
 .dash-source-name.lechat  { color: var(--lechat); }
+.dash-source-name.deepseek { color: var(--deepseek); }
 
 .dash-source-bar-wrap {
   height: 4px;
@@ -1251,6 +1256,7 @@ input[type="file"] { display: none; }
 .dash-source-bar.chatgpt { background: var(--chatgpt); }
 .dash-source-bar.gemini  { background: var(--gemini); }
 .dash-source-bar.lechat  { background: var(--lechat); }
+.dash-source-bar.deepseek { background: var(--deepseek); }
 
 .dash-source-count {
   font-family: var(--mono);
@@ -1375,6 +1381,7 @@ input[type="file"] { display: none; }
 .dash-recent-source.chatgpt { color: var(--chatgpt); }
 .dash-recent-source.gemini  { color: var(--gemini); }
 .dash-recent-source.lechat  { color: var(--lechat); }
+.dash-recent-source.deepseek { color: var(--deepseek); }
 
 .dash-recent-title {
   font-size: 12px;

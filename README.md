@@ -2,7 +2,7 @@
 
 Lore is a private memory for your AI conversations.
 
-Import your AI conversations (ChatGPT, Claude, Gemini, Le Chat), search everything instantly, and never lose context again.
+Import your AI conversations (ChatGPT, Claude, Gemini, Le Chat, DeepSeek), search everything instantly, and never lose context again.
 
 Your data stays fully private — encrypted in your browser before it ever reaches the server.
 
@@ -33,7 +33,7 @@ Something you can come back to weeks or months later — and still have full con
 ## What can you use it for?
 
 - Keep long-term memory of your AI conversations  
-- Build a personal knowledge base from ChatGPT / Claude / Gemini / Le Chat  
+- Build a personal knowledge base from ChatGPT / Claude / Gemini / Le Chat / DeepSeek  
 - Search past ideas, answers, and insights instantly  
 - Track how your thinking evolves over time  
 - Keep everything private and under your control  
@@ -42,7 +42,7 @@ Something you can come back to weeks or months later — and still have full con
 
 ## Key features
 
-- Import conversations from ChatGPT, Claude, Gemini, and Le Chat (Mistral)  
+- Import conversations from ChatGPT, Claude, Gemini, Le Chat (Mistral), and DeepSeek  
 - Search everything instantly (runs locally in your browser)
 - Client-side encryption (your data is encrypted before upload)  
 - Self-hosted — your data stays on your server  
@@ -192,6 +192,11 @@ Failed login attempts are tracked per IP address and username. After 5 failed at
 2. Click **Export** to download your ZIP file
 3. In Lore, click **Import**, select the **Le Chat** tab, and drop the ZIP
 
+**DeepSeek:**
+1. Go to chat.deepseek.com → open the menu → **Export Data**
+2. Download your ZIP file
+3. In Lore, click **Import**, select the **DeepSeek** tab, and drop the ZIP
+
 **Lore backup:**
 1. Export your archive from Settings → Export
 2. In Lore (same or different instance), click **Import** and drop the ZIP
@@ -224,7 +229,7 @@ The main screen shows a dashboard of your archive:
 - **Messages** — total number of messages across all conversations
 - **Active days** — number of days on which at least one conversation took place
 - **Avg msg / conv** — average number of messages per conversation
-- **Sources** — breakdown by AI (Claude, ChatGPT, Gemini, Le Chat) with percentage bars
+- **Sources** — breakdown by AI (Claude, ChatGPT, Gemini, Le Chat, DeepSeek) with percentage bars
 - **Activity heatmap** — last 12 months of activity, one cell per day
 - **Recently added** — latest imported conversations with source, date, and message count
 

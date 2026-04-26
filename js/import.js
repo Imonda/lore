@@ -56,7 +56,7 @@ const Importer = (() => {
         if (names.some(n => n.includes('conversations.json') && n.includes('claude'))) return 'claude';
         if (names.some(n => n.endsWith('.json') && n.includes('claude'))) return 'claude';
 
-        // conversations.json exists — peek inside to tell Claude from ChatGPT
+        // conversations.json exists — peek inside to tell Claude / ChatGPT / DeepSeek apart
         const convFile = zip.file('conversations.json')
             || zip.file(Object.keys(zip.files).find(n => n.endsWith('conversations.json')) || '');
 
@@ -68,6 +68,9 @@ const Importer = (() => {
 
             // Claude exports have uuid + chat_messages fields
             if (first.uuid !== undefined || first.chat_messages !== undefined) return 'claude';
+
+            // DeepSeek exports have mapping with fragments (REQUEST/RESPONSE) instead of create_time
+            if (first.mapping !== undefined && first.inserted_at !== undefined) return 'deepseek';
 
             // ChatGPT exports have create_time (unix timestamp) + mapping fields
             if (first.create_time !== undefined || first.mapping !== undefined) return 'chatgpt';
@@ -480,6 +483,106 @@ const Importer = (() => {
         return map[ext] || 'plaintext';
     }
 
+    // ── DeepSeek parser ───────────────────────────────────────────────────────
+
+    async function parseDeepSeek(zip) {
+        let jsonFile = zip.file('conversations.json');
+        if (!jsonFile) {
+            const found = Object.keys(zip.files).find(n => n.endsWith('conversations.json'));
+            if (found) jsonFile = zip.file(found);
+        }
+        if (!jsonFile) throw new Error('conversations.json not found in DeepSeek export');
+
+        const raw  = await jsonFile.async('string');
+        const data = JSON.parse(raw);
+
+        const conversations = [];
+
+        for (const conv of data) {
+            const mapping = conv.mapping || {};
+
+            // Flatten linked list: start from root, follow children in order
+            const ordered = [];
+            const visited = new Set();
+
+            function walk(id) {
+                if (!id || visited.has(id)) return;
+                visited.add(id);
+                const node = mapping[id];
+                if (!node) return;
+                if (node.message && node.id !== 'root') ordered.push(node);
+                (node.children || []).forEach(walk);
+            }
+            walk('root');
+
+            // If walk produced nothing, fall back to insertion-time sort
+            if (!ordered.length) {
+                Object.values(mapping).forEach(node => {
+                    if (node.message && node.id !== 'root') ordered.push(node);
+                });
+                ordered.sort((a, b) =>
+                    new Date(a.message.inserted_at || 0) - new Date(b.message.inserted_at || 0)
+                );
+            }
+
+            const messages = [];
+            for (const node of ordered) {
+                const msg = node.message;
+                if (!msg || !Array.isArray(msg.fragments)) continue;
+
+                // Determine role from fragment type
+                const firstFrag = msg.fragments[0];
+                if (!firstFrag) continue;
+
+                let role;
+                if (firstFrag.type === 'REQUEST') role = 'user';
+                else if (firstFrag.type === 'RESPONSE') role = 'assistant';
+                else continue;
+
+                // Collect text from all fragments of matching type
+                const text = msg.fragments
+                    .filter(f => f.type === firstFrag.type && typeof f.content === 'string')
+                    .map(f => f.content.trim())
+                    .filter(Boolean)
+                    .join('\n\n');
+
+                if (!text) continue;
+
+                messages.push({
+                    role,
+                    content:    JSON.stringify([{ type: 'text', text }]),
+                    created_at: msg.inserted_at || conv.inserted_at || null,
+                });
+            }
+
+            if (!messages.length) continue;
+
+            // Title from conv.title, fallback to first user message
+            let title = conv.title || '';
+            if (!title) {
+                const firstUser = messages.find(m => m.role === 'user');
+                if (firstUser) {
+                    const parsed = JSON.parse(firstUser.content);
+                    const t = parsed[0]?.text || '';
+                    title = t.length > 80 ? t.slice(0, 80).trim() + '\u2026' : t;
+                }
+            }
+
+            conversations.push({
+                source:     'deepseek',
+                ext_id:     conv.id,
+                title:      title || 'Untitled',
+                created_at: conv.inserted_at || new Date().toISOString(),
+                updated_at: conv.updated_at  || conv.inserted_at || new Date().toISOString(),
+                messages,
+            });
+        }
+
+        console.log('[Lore] DeepSeek conversations parsed:', conversations.length);
+        if (!conversations.length) throw new Error('No DeepSeek conversations found');
+        return conversations;
+    }
+
     // ── ChatGPT HTML parser (chat.html with embedded jsonData) ────────────────
 
     async function parseChatGPTHtml(zip) {
@@ -708,6 +811,8 @@ const Importer = (() => {
             conversations = await parseGemini(zip);
         } else if (source === 'lechat') {
             conversations = await parseLeChat(zip);
+        } else if (source === 'deepseek') {
+            conversations = await parseDeepSeek(zip);
         } else {
             // Try both parsers
             try {

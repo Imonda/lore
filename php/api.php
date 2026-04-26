@@ -37,7 +37,7 @@ switch ($action) {
         $updated_at = $body['updated_at'] ?? null;
         $messages   = $body['messages']   ?? [];
 
-        if (!in_array($source, ['claude', 'chatgpt', 'gemini', 'lechat'], true) || !$ext_id || !$title) {
+        if (!in_array($source, ['claude', 'chatgpt', 'gemini', 'lechat', 'deepseek'], true) || !$ext_id || !$title) {
             echo json_encode(['ok' => false, 'error' => 'Invalid payload']);
             exit;
         }
